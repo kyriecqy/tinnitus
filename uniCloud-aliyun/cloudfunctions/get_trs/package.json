@@ -1,0 +1,7 @@
+{
+  "name": "get_trs",
+  "dependencies": {},
+  "extensions": {
+    "uni-cloud-jql": {}
+  }
+}

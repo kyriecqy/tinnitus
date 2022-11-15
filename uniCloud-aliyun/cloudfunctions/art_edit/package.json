@@ -1,0 +1,7 @@
+{
+  "name": "art_edit",
+  "dependencies": {},
+  "extensions": {
+    "uni-cloud-jql": {}
+  }
+}
