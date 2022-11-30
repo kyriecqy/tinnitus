@@ -1,0 +1,19 @@
+{
+  "passwordSecret": "sudfihkjsajhdgweuyhioenwiewwesd",
+  "tokenSecret": "ewjudiunwdvtefhidsjicbdwo",
+  "tokenExpiresIn": 7200,
+  "tokenExpiresThreshold": 600,
+  "passwordErrorLimit": 6,
+  "bindTokenToDevice": false,
+  "passwordErrorRetryTime": 3600,
+  "autoSetInviteCode": false,
+  "forceInviteCode": false,
+  "preferedAppPlatform": "app",
+  "service": {
+		"univerify": {
+		      "appid": "_UNI_1511104", // 当前应用的appid，使用云函数URL化，此项必须配置
+		      "apiKey": "0a7f6763b067ae3f49202351d36e9489", 
+		      "apiSecret": "e3683af8ff0220171acf165030d753ac"
+		    }
+  }
+}

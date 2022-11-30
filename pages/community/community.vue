@@ -12,7 +12,7 @@
 					<ArtItem :detail="item"></ArtItem>
 				</view>
 			</scroll-view>
-			
+			<!-- 悬浮按钮
 			<view class="btn">
 				<uni-fab
 					:pattern="pattern"
@@ -21,6 +21,7 @@
 					@fabClick="add"
 				></uni-fab>
 			</view>
+			-->
 		</view>
 	</view>
 </template>

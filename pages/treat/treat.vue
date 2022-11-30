@@ -3,8 +3,8 @@
 		<image class="img" src="../../static/img/bg.webp" mode=""></image>
 		<view class="warn" v-if="!isDia">
 		</view>
-		<view class="main" v-else>
-			<view class="item" v-for="(item, index) in music_list" :key="index" @tap="play(index)">
+		<view class="main" v-else v-show="!isLoad">
+			<view class="item" v-for="(item, index) in music_list" :key="index" @tap="goDetail(index)">
 			  <view class="transition"></view>
 			  <view class="gradient"></view>
 			  <view class="label">
@@ -20,32 +20,16 @@
 				@close="close"></uni-popup-dialog>
 		</uni-popup>
 		
-		<uni-popup ref="musicDetail" backgroundColor="#eee" type="bottom">
-			<view class="popup-content">
-				<image class="pop-img" :src="currentObj.pic"></image>
-				<view class="title">
-					{{ currentObj.name }}
-				</view>
-				<view class="clock">
-					<image src="../../static/icon/clock.png"></image>
-				</view>
-				<view class="play-controll">
-					<image src="../../static/icon/music_before.png" @tap="beforeMus" class="side"></image>
-					<image :src="isPlay == true ? '../../static/icon/music_play.png' : '../../static/icon/music_stop.png'" 
-					       class="center"
-								 @tap="click"
-					></image>
-					<image src="../../static/icon/music_next.png" @tap="nextMus" class="side"></image>
-				</view>
-			</view>
-		</uni-popup>
-		
 		<uni-popup ref="clock" backgroundColor="#eee"  type="center">
 			<view class="clock-content">
 				<text>设置治疗时间</text>
 				<uni-data-checkbox :localdata="time" v-model="selectTime"></uni-data-checkbox>
 			</view>
 		</uni-popup>
+		
+		<view class="load">
+			<u-loading-page :loading="isLoad" bgColor="rgba(0, 0, 0, 0.3)" fontSize="25" color="#fff" loadingColor="#fff" iconSize="30"></u-loading-page>
+		</view>
 	</view>
 </template>
 
@@ -55,6 +39,7 @@
 	export default {
 		data() {
 			return {
+				isLoad: true,
 				music_list: [
 					{
 						name: '',
@@ -105,19 +90,22 @@
 					}).then(res => {
 						//console.log(res);
 						this.music_list = res.result.music_list
+						store.dispatch('setList', this.music_list)
 						this.isDia = res.result.isDia
+						this.isLoad = false
 						this.open()
-						this.musicLoop()
 					})
 				}
 			},
-			play(index) {
-				this.currentObj = this.music_list[index]
-				innerAudioContext.src = this.music_list[index].url
-				innerAudioContext.play()
-				this.currentIndex = index
-				this.isPlay = true
-				this.$refs.musicDetail.open()
+			goDetail(index) {
+				store.dispatch('setCurrent', index)
+				store.dispatch('setStatus', true)
+				store.state.musicinfo.music.src = this.music_list[index].url
+				store.state.musicinfo.music.play()
+				let info = encodeURIComponent(JSON.stringify(this.music_list))
+				uni.navigateTo({
+					url: '/pages/music-detail/music-detail?info=' + info
+				})
 			},
 			open() {
 				if(this.isDia == false) {
@@ -145,52 +133,6 @@
 			closeClock() {
 				this.$refs.clock.close()
 			},
-			//歌曲详情控制播放
-			click() {
-				if(this.isPlay == true) {
-					this.isPlay = false
-					innerAudioContext.pause()
-				}else {
-					this.isPlay = true
-					innerAudioContext.play()
-				}
-			},
-			//上一首
-			beforeMus() {
-				if(this.currentIndex >= 1) {
-					this.currentIndex -= 1
-					this.currentObj = this.music_list[this.currentIndex]
-					innerAudioContext.src = this.music_list[this.currentIndex].url
-					innerAudioContext.play()
-					this.isPlay = true
-				}
-			},
-			//下一首
-			nextMus() {
-				let lastIndex = this.music_list.length - 1
-				if(this.currentIndex <= lastIndex - 1) {
-					this.currentIndex += 1
-					this.currentObj = this.music_list[this.currentIndex]
-					innerAudioContext.src = this.music_list[this.currentIndex].url
-					innerAudioContext.play()
-					this.isPlay = true
-				}
-			},
-			musicLoop() {
-				let len = this.music_list.length - 1
-				innerAudioContext.onEnded(() => {
-					if(this.currentIndex <= len - 1) {
-						this.currentIndex += 1
-						this.currentObj = this.music_list[this.currentIndex]
-					}else {
-						this.currentPlayIndex = 0
-						this.currentObj = this.music_list[this.currentIndex]
-					}
-					innerAudioContext.src =this.music_list[this.currentIndex].url
-					innerAudioContext.play()
-					this.isPlay = true
-				})
-			}
 		}
 	}
 </script>
@@ -295,7 +237,7 @@
 	margin: 0 40rpx;
 }
 .side:active {
- transform: scale(0.97);
+ transform: scale(1.15);
 }
 .clock {
 	position: fixed;

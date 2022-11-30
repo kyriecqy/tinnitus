@@ -1,6 +1,9 @@
 <template>
 	<view class="content">
 		<image class="img" src="../../static/img/bg.webp" mode=""></image>
+		<view class="load">
+			<u-loading-page :loading="isLoad" bgColor="rgba(0, 0, 0, 0.3)" fontSize="25" color="#fff" loadingColor="#fff" iconSize="30"></u-loading-page>
+		</view>
 		<view class="title">
 			{{ artDetail.title }}
 		</view>
@@ -18,6 +21,7 @@
 				<image :src="item" mode="aspectFit"></image>
 			</view>
 		</view>
+		<!-- 悬浮按钮
 		<view class="btn">
 			<uni-fab
 				:pattern="pattern"
@@ -27,7 +31,7 @@
 				@trigger="trigger"
 			></uni-fab>
 		</view>
-		
+		-->
 		<uni-popup ref="popup" type="center">
 			<uni-popup-dialog 
 			  mode="base" 
@@ -50,6 +54,7 @@
 			return {
 				id: '',
 				artDetail: {},
+				isLoad: true,
 				pattern: {
 					buttonColor: '#F9921C',
 					selectedColor: '#F9921C'
@@ -84,6 +89,7 @@
 					}
 				}).then(res => {
 					//console.log('res',res);
+					this.isLoad = false
 					this.artDetail = res.result.data[0]
 				})
 			},
@@ -134,6 +140,9 @@
 		width: 100%;
 		height: 100%;
 		z-index: -1;
+	}
+	.load {
+		z-index: 100;
 	}
 	.title {
 		font-size: 45rpx;

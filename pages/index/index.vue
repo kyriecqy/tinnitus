@@ -1,7 +1,7 @@
 <template>
 	<view class="content">
 		<!-- 轮播图 -->
-		<swiper :indicator-dots="true" :autoplay="true" :interval="3000" :duration="1000">
+		<swiper :indicator-dots="true" :autoplay="true" :interval="3000" :duration="1000" @touchmove.stop>
 			<swiper-item>
 				<view class="swiper-item">
 					<image src="../../static/img/banner1.jpeg" mode=""></image>
@@ -9,7 +9,12 @@
 			</swiper-item>
 			<swiper-item>
 				<view class="swiper-item">
-					<image src="../../static/img/banner3.jpeg" mode=""></image>
+					<image src="../../static/img/banner3.webp" mode=""></image>
+				</view>
+			</swiper-item>
+			<swiper-item>
+				<view class="swiper-item">
+					<image src="../../static/img/banner4.webp" mode=""></image>
 				</view>
 			</swiper-item>
 		</swiper>
@@ -17,7 +22,7 @@
 	  <view class="bg">
 	  	<image src="../../static/img/bg.webp" mode=""></image>
 	  </view>
-		
+		<hover-ball />
 		<!-- 功能模块 -->
 		<view class="diagnosis" @tap="goDia">
 			<image src="../../static/icon/zd.png" mode=""></image>
@@ -35,6 +40,18 @@
 			<image src="../../static/icon/zl.png" mode=""></image>
 			<text>耳鸣治疗</text>
 		</view>
+		
+		<uni-popup ref="popup" type="center">
+			<uni-popup-dialog 
+			  mode="base" 
+				title="提醒" 
+				content="距离上次诊断已有2个月,请即使再次诊断" 
+				@close="close" 
+				@confirm="confirm"
+				confirmText="前往诊断"
+				cancelText="稍后再说"
+			></uni-popup-dialog>
+		</uni-popup>
 	</view>
 </template>
 
@@ -44,11 +61,13 @@
 	export default {
 		data() {
 			return {
-				
+				last_time: ''
 			}
 		},
-		onLoad() {
+		onReady() {
 			//console.log('index',store.state.userinfo);
+			this.last_time = store.state.userinfo.time
+			this.is_expire()
 		},
 		methods: {
 			toLogin() {
@@ -83,6 +102,24 @@
 				uni.navigateTo({
 					url: '/pages/treat/treat'
 				})
+			},
+			is_expire() {
+				let diff = (Date.now() - this.last_time)/1000
+				let days = parseInt(diff/86400)
+				
+				if(days >= 60) this.open()
+			},
+			open() {
+				this.$refs.popup.open()
+			},
+			confirm() {
+				uni.navigateTo({
+					url: '/pages/diagnosis/diagnosis'
+				})
+				this.$refs.popup.close()
+			},
+			close() {
+				this.$refs.popup.close()
 			}
 		}
 	}
@@ -139,6 +176,9 @@
 			left: 18%;
 		}
 	}
+	.diagnosis:active {
+		transform: scale(1.1);
+	}
 	.question {
 		width: 250rpx;
 		height: 280rpx;
@@ -165,6 +205,9 @@
 			top: 17%;
 			left: 18%;
 		}
+	}
+	.question:active {
+		transform: scale(1.1);
 	}
 	.trs {
 		width: 280rpx;
@@ -193,6 +236,9 @@
 			left: 19%;
 		}
 	}
+	.trs:active {
+		transform: scale(1.1);
+	}
 	.treat {
 		width: 250rpx;
 		height: 360rpx;
@@ -219,5 +265,8 @@
 			top: 19%;
 			left: 18%;
 		}
+	}
+	.treat:active {
+		transform: scale(1.1);
 	}
 </style>

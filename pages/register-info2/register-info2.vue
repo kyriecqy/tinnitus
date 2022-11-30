@@ -80,7 +80,10 @@
 					}
 				})
 				this.userinfo.diseaseList = disease
+				this.userinfo.avatar = this.userinfo.gender == '男' ? 'https://vkceyugu.cdn.bspapp.com/VKCEYUGU-57427bc9-5796-4e91-8bbb-72a81e0943f3/1654c443-103e-4af8-aae0-a589137d8b5b.png'
+				                                                     : 'https://vkceyugu.cdn.bspapp.com/VKCEYUGU-57427bc9-5796-4e91-8bbb-72a81e0943f3/a807c384-c808-42a7-9a8f-ff8f10b6b108.png'
 				console.log('new', this.userinfo);
+				this.userinfo.time = Date.now()
 				store.dispatch('setUser', this.userinfo)
 				uniCloud.callFunction({
 					name: 'update_user',
@@ -118,7 +121,7 @@
 .title {
 	padding-left: 270rpx;
 	font-size: 50rpx;
-	padding-top: 80rpx;
+	padding-top: 150rpx;
 	font-weight: 900;
 }
 .msg {
@@ -199,7 +202,7 @@
 	border-radius: 90rpx;
 	border: 1px solid white;
 	box-shadow: -5rpx -5rpx 50rpx 2rpx rgba(0, 0, 0, 0.5);
-	margin-top: 130rpx;
+	margin-top: 200rpx;
 }
 .next button {
 	font-size: 40rpx;
@@ -208,6 +211,6 @@
 	border-radius: 90rpx;
 	border: 1px solid white;
 	box-shadow: -5rpx -5rpx 50rpx 2rpx rgba(0, 0, 0, 0.5);
-	margin-top: 130rpx;
+	margin-top: 200rpx;
 }
 </style>

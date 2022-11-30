@@ -3,24 +3,16 @@
 		<image class="img" src="../../static/img/bg-trs.webp" mode=""></image>
 		<view class="topNav">
 			<image src="../../static/icon/zjt.png" @tap="back" class="left-arrow"></image>
-			<image :src="stopTime != 0 ? '../../static/icon/clock-yellow.png' : '../../static/icon/clock.png'" @tap="setClock" class="clock"></image>
 		</view>
 		<view class="center">
 			<text>TRS助眠音乐</text>
-			<view class="play-contain">
-				<image src="../../static/icon/before-mus.png" class="play-item2" @tap="beforeMus"></image>
-				<image :src="isPlay ? '../../static/icon/play.png' : '../../static/icon/stop.png'" class="play-item1" @tap="change"></image>
-				<image src="../../static/icon/next-mus.png" class="play-item2" @tap="nextMus"></image>
-			</view>
-			<view class="msg">当前播放：{{ musicList[currentPlayIndex].name }}</view>
 		</view>
-		<uni-load-more status="loading" v-if="isLoad"></uni-load-more>
-		<view class="main" v-else>
+		<view class="main" v-show="!isLoad">
 			<scroll-view scroll-y="true" class="scroll-content">
 				<view v-for="(item, index) in musicList" :key="index">
-					<view class="music-item" @tap="select(index)">
+					<view class="music-item" @tap="goDetail(index)"> 
 						<view class="music-img">
-							<image src="../../static/img/bg-trs.webp" mode=""></image>
+							<image :src="item.pic" mode=""></image>
 						</view>
 						<view class="text">
 							<view class="title">{{ item.name }}</view>
@@ -31,26 +23,15 @@
 			</scroll-view>
 		</view>
 		
-		<uni-popup ref="popup" background-color="#fff" type="bottom">
-			<view class="popup-content">
-				<view class="popup-title">设置自动关闭时间</view>
-				<view class="popup-main">
-				  <view class="main-left" @tap="setTime">
-						关闭时间：{{stopTime}}分钟后
-					</view>
-				</view>
-			</view>
-		</uni-popup>
-		
-		<uni-popup ref="popupTime" type="dialog">
-			<uni-popup-dialog mode="input" title="设置关闭时间" :duration="2000" :before-close="true" @close="close" @confirm="confirm"></uni-popup-dialog>
-		</uni-popup>
+		<view class="load">
+			<u-loading-page :loading="isLoad" bgColor="rgba(0, 0, 0, 0.3)" fontSize="25" color="#fff" loadingColor="#fff" iconSize="30"></u-loading-page>
+		</view>
 	</view>
 </template>
 
 <script>
+	import store from '../../store/index.js';
 	let innerAudioContext = uni.createInnerAudioContext();
-	
 	export default {
 		data() {
 			return {
@@ -58,29 +39,17 @@
 					{
 						name: '',
 						url: '',
-						author: ''
+						author: '',
+						pic: ''
 					}
 				],
 				isPlay: false,
 				currentPlayIndex: 0,
-				isLoad: true,
-				stopTime: 0,
-				setTimeoutId: ''
+				isLoad: true
 			}
 		},
 		onLoad() {
 			this.getMusic()
-			innerAudioContext.onEnded(() => {
-				let len = this.musicList.length - 1
-				if(this.currentPlayIndex <= len - 1) {
-					this.currentPlayIndex += 1
-				}else {
-					this.currentPlayIndex = 0
-				}
-				innerAudioContext.src =this.musicList[this.currentPlayIndex].url
-				innerAudioContext.play()
-				this.isPlay = true
-			})
 		},
 		methods: {
 			//回到首页
@@ -95,67 +64,21 @@
 					name: 'get_trs'
 				}).then(res => {
 					this.musicList = res.result.data
+					store.dispatch('setList', this.musicList)
 					innerAudioContext.src = this.musicList[0].url
 					this.isLoad = false
 				})
 			},
-			//选择播放某一首
-			select(index) {
-				console.log(this.musicList[index]);
-				innerAudioContext.src = this.musicList[index].url
-				this.currentPlayIndex = index
-				innerAudioContext.play()
-				this.isPlay = true
-			},
-			//总体是否播放
-			change() {
-				if(this.isPlay) {
-					innerAudioContext.pause()
-					this.isPlay = false
-				}else {
-					innerAudioContext.play()
-					this.isPlay = true
-				}
-			},
-			//上一首
-			beforeMus() {
-				if(this.currentPlayIndex >= 1) {
-					this.currentPlayIndex -= 1
-					innerAudioContext.src =this.musicList[this.currentPlayIndex].url
-					innerAudioContext.play()
-					this.isPlay = true
-				}
-				
-			},
-			//下一首
-			nextMus() {
-				let lastIndex = this.musicList.length - 1
-				if(this.currentPlayIndex <=lastIndex - 1) {
-					this.currentPlayIndex += 1
-					innerAudioContext.src =this.musicList[this.currentPlayIndex].url
-					innerAudioContext.play()
-					this.isPlay = true
-				}
-			},
-			setClock() {
-				this.$refs.popup.open()
-			},
-			setTime() {
-				this.$refs.popupTime.open()
-			},
-			confirm(e) {
-				this.$refs.popupTime.close()
-				clearTimeout(this.setTimeoutId) //关闭前一个定时器
-				this.stopTime = e
-				let ms = e * 60 * 1000
-				this.setTimeoutId = setTimeout(() => {
-					innerAudioContext.stop()
-					this.stopTime = 0
-					this.isPlay = false
-				}, ms)
-			},
-			close() {
-				this.$refs.popupTime.close()
+			//前往音乐详情页，并播放
+			goDetail(index) {
+				store.dispatch('setCurrent', index)
+				store.dispatch('setStatus', true)
+				store.state.musicinfo.music.src = this.musicList[index].url
+				store.state.musicinfo.music.play()
+				let info = encodeURIComponent(JSON.stringify(this.musicList))
+				uni.navigateTo({
+					url: '/pages/music-detail/music-detail?info=' + info
+				})
 			}
 		}
 	}
@@ -175,56 +98,36 @@
 		z-index: -1;
 	}
 	.topNav {
-		padding-top: 60rpx;
+		padding-top: 120rpx;
 		height: 60rpx;
 		width: 100%;
 		.left-arrow {
-			width: 50rpx;
-			height: 40rpx;
-			padding-left: 10rpx;
+			width: 60rpx;
+			height: 50rpx;
+			padding-left: 20rpx;
+		}
+		.left-arrow:active {
+			transform: scale(1.2);
 		}
 		.clock {
-			width: 50rpx;
-			height: 50rpx;
+			width: 80rpx;
+			height: 80rpx;
 			position: fixed;
 			right: 30rpx;
-			top: 55rpx;
+			top: 100rpx;
 		}
 	}
 	.center {
 		color: #f8f8f8;
-		font-size: 65rpx;
-		padding-left: 60rpx;
-		text {
-			padding-left: 135rpx;
-		}
-		.play-contain {
-			padding-left: 150rpx;
-			margin-top: 20rpx;
-			image {
-				width: 90rpx;
-				height: 90rpx;
-			}
-			.play-item1 {
-				width: 110rpx;
-				height: 110rpx;
-				margin: 0 30rpx;
-			}
-			.play-item2 {
-				margin-bottom: 10rpx;
-			}
-		}
-		.msg {
-			font-size: 40rpx;
-			padding-left: 150rpx;
-			margin-top: 10rpx;
-		}
+		font-size: 75rpx;
+		padding-left: 80rpx;
+		padding-top: 120rpx;
 	}
 	.main {
 		position: fixed;
 		bottom: 0;
 		width: 100%;
-		height: 850rpx;
+		height: 1100rpx;
 		background-color: #f8f8f8;
 		border-top-left-radius: 20rpx;
 		border-top-right-radius: 20rpx;
@@ -241,7 +144,7 @@
 			.text {
 				display: flex;
 				margin-left: 20rpx;
-				font-size: 35rpx;
+				font-size: 45rpx;
 				.author {
 					color: #717171;
 					margin-left: 15rpx;
@@ -255,6 +158,9 @@
 				margin-left: 20rpx;
 			}
 		}
+	}
+	.load {
+		z-index: 100;
 	}
 }
 .popup-content {

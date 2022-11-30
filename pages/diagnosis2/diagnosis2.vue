@@ -52,11 +52,22 @@
 		onLoad(options) {
 			let info = JSON.parse(decodeURIComponent(options.music_select))
 			this.music_select = info
+			innerAudioContext.src = 'https://vkceyugu.cdn.bspapp.com/VKCEYUGU-57427bc9-5796-4e91-8bbb-72a81e0943f3/96cc6294-cb8a-4455-8c5e-14a2e7c62aac.mp3'
+			innerAudioContext.play()
+			this.isPlay = true
 		},
 		methods: {
 			next() {
 				innerAudioContext.stop()
+				if(this.currentIndex < 0) {
+					uni.showToast({
+						position: 'center',
+						title: '请选择其中一项'
+					})
+					return;
+				}
 				this.music_select.z_level = this.z_list[this.currentIndex].level
+				
 				let info = encodeURIComponent(JSON.stringify(this.music_select))
 				uni.navigateTo({
 					url: '/pages/diag-result/diag-result?music_select=' + info

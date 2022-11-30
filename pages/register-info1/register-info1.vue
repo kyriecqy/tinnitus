@@ -67,7 +67,7 @@
 				this.date = e.target.value
 			},
 			next() {
-				this.userinfo.gender = this.sexValue == 0 ? 'man' : 'woman'
+				this.userinfo.gender = this.sexValue == 0 ? '男' : '女'
 				this.userinfo.birth = this.date
 				let info = JSON.stringify(this.userinfo)
 				uni.navigateTo({
@@ -96,13 +96,13 @@
 .title {
 	padding-left: 270rpx;
 	font-size: 50rpx;
-	padding-top: 80rpx;
+	padding-top: 120rpx;
 	font-weight: 900;
 }
 .sex, .birth {
 	display: flex;
 	margin-top: 200rpx;
-	margin-left: 150rpx;
+	margin-left: 130rpx;
 }
 .sex text {
 	font-size: 45rpx;
@@ -133,12 +133,12 @@
 	height: 50rpx;
 	z-index: 1000;
 	position: fixed;
-	top: 49%;
-	right: 24%;
+	top: 42.5%;
+	right: 22%;
 }
 .uni-input {
-	font-size: 40rpx;
-	margin-top: 25rpx;
+	font-size: 50rpx;
+	margin-top: 15rpx;
 }
 .next button {
 	font-size: 40rpx;
@@ -147,6 +147,6 @@
 	border-radius: 90rpx;
 	border: 1px solid white;
 	box-shadow: -5rpx -5rpx 50rpx 2rpx rgba(0, 0, 0, 0.5);
-	margin-top: 200rpx;
+	margin-top: 500rpx;
 }
 </style>

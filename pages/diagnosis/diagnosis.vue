@@ -22,6 +22,7 @@
 </template>
 
 <script>
+	const innerAudioContext = uni.createInnerAudioContext();
 	const audioHelper = uni.requireNativePlugin('L-GetDecibel')
 	export default {
 		data() {
@@ -38,6 +39,9 @@
 			//setTimeout(() => {
 			//	this.stop()
 			//}, 2000)
+			innerAudioContext.loop = true
+			innerAudioContext.src = 'https://vkceyugu.cdn.bspapp.com/VKCEYUGU-57427bc9-5796-4e91-8bbb-72a81e0943f3/e73685f3-868a-423a-a38c-ab30d119e793.mp3'
+			innerAudioContext.play()
 		},
 		methods: {
 			begin() {
@@ -58,6 +62,13 @@
 				audioHelper.stop()
 			},
 			next() {
+				if(this.music_select.place == '') {
+					uni.showToast({
+						position: 'center',
+						title: '请选择其中一项'
+					})
+					return;
+				}
 				let info = encodeURIComponent(JSON.stringify(this.music_select))
 				uni.navigateTo({
 					url: '/pages/diagnosis1/diagnosis1?music_select=' + info
@@ -65,6 +76,8 @@
 			},
 			select(e) {
 				this.music_select.place = e.target.dataset.place
+				innerAudioContext.stop()
+				innerAudioContext.destroy()
 			}
 		}
 	}

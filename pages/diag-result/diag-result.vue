@@ -45,7 +45,8 @@
 				level_arr: [],
 				treat_level: {
 					level: []
-				}
+				},
+				isOk: false
 			}
 		},
 		onLoad(options) {
@@ -83,10 +84,7 @@
 				//console.log(this.level_str);
 			},
 			next() {
-				this.addOrUpdateTreat()
-				uni.navigateTo({
-					url: '/pages/treat/treat'
-				})
+				this.addOrUpdateTreat1()
 			},
 			back() {
 				this.addOrUpdateTreat()
@@ -101,6 +99,18 @@
 					data: {
 						...this.treat_level
 					}
+				})
+			},
+			addOrUpdateTreat1() { //解决add_or_update_treat还没返回结果就调用get_treat的问题
+				uniCloud.callFunction({
+					name: 'add_or_update__treat',
+					data: {
+						...this.treat_level
+					}
+				}).then(() => {
+					uni.navigateTo({
+						url: '/pages/treat/treat'
+					})
 				})
 			}
 		}

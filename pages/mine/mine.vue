@@ -3,10 +3,10 @@
 		<image class="img" src="../../static/img/bg.webp" mode=""></image>
 		<view class="user">
 			<view class="avatar">
-				<image src="../../static/img/mr-avatar.png" mode=""></image>
+				<image :src="avatar" mode=""></image>
 			</view>
 			<view class="name">
-				KyrieC
+				{{ name }}
 			</view>
 		</view>
 		<view class="module">
@@ -18,7 +18,8 @@
 </template>
 
 <script>
-	import moduleItem from '../../components/moduleItem/moduleItem.vue'
+	import moduleItem from '../../components/moduleItem/moduleItem.vue';
+	import store from '../../store/index.js';
 	export default {
 		components: {
 			moduleItem
@@ -28,7 +29,7 @@
 				moduleList: [
 					{
 						iconPath: '../../static/icon/dangan.png',
-						title: '耳鸣档案'
+						title: '随访记录'
 					},
 					{
 						iconPath: '../../static/icon/grxx.png',
@@ -44,15 +45,38 @@
 					}
 				],
 			  pageList: [
-					'/pages/archives/archives', 
+					'/pages/history/history', 
 					'/pages/perInformation/perInformation', 
 					'/pages/feedback/feedback', 
 					'/pages/setup/setup'
-				]
+				],
+				avatar: 'https://vkceyugu.cdn.bspapp.com/VKCEYUGU-57427bc9-5796-4e91-8bbb-72a81e0943f3/1654c443-103e-4af8-aae0-a589137d8b5b.png',
+				name: '默认用户名'
 			};
 		},
+		onLoad() {
+			if(store.state.userinfo.avatar && store.state.userinfo.name) {
+				this.avatar = store.state.userinfo.avatar
+				this.name = store.state.userinfo.name
+			}
+		},
+    onShow() {
+			if(store.state.userinfo.avatar && store.state.userinfo.name) {
+				this.avatar = store.state.userinfo.avatar
+				this.name = store.state.userinfo.name
+			}
+		},
 		methods: {
+			toLogin() {
+				if(!store.state.userinfo.phone) {
+					uni.reLaunch({
+						url: '/pages/login/login'
+					})
+					return true
+				}
+			},
 			setUp(index) {
+				if(this.toLogin()) return;
 				uni.navigateTo({
 					url: this.pageList[index]
 				}).then(res => {
@@ -96,6 +120,7 @@
 	.module {
 		width: 90%;
 		height: 405rpx;
+		margin-top: 40rpx;
 		margin-left: 38rpx;
 		background-color: white;
 		border-radius: 20rpx;

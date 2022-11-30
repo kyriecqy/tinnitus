@@ -72,28 +72,48 @@
 			"path": "pages/setup/setup",
 			"style": {
 				"navigationBarTitleText": "设置",
-				"enablePullDownRefresh": false
+				"enablePullDownRefresh": false,
+				"app-plus": {
+					"titleNView": {
+						"titleSize": "25px"
+					}
+				}
 			}
 
 		}, {
-			"path": "pages/archives/archives",
+			"path": "pages/history/history",
 			"style": {
-				"navigationBarTitleText": "耳鸣档案",
-				"enablePullDownRefresh": false
+				"navigationBarTitleText": "随访记录",
+				"enablePullDownRefresh": false,
+				"app-plus": {
+					"titleNView": {
+						"titleSize": "25px"
+					}
+				}
 			}
 
 		}, {
 			"path": "pages/perInformation/perInformation",
 			"style": {
 				"navigationBarTitleText": "个人信息",
-				"enablePullDownRefresh": false
+				"enablePullDownRefresh": false,
+				"app-plus": {
+					"titleNView": {
+						"titleSize": "25px"
+					}
+				}
 			}
 
 		}, {
 			"path": "pages/feedback/feedback",
 			"style": {
 				"navigationBarTitleText": "用户反馈",
-				"enablePullDownRefresh": false
+				"enablePullDownRefresh": false,
+				"app-plus": {
+					"titleNView": {
+						"titleSize": "25px"
+					}
+				}
 			}
 
 		}, {
@@ -229,6 +249,16 @@
 										"titleSize": "25px"
 									}
 								}
+            }
+            
+        }
+        ,{
+            "path" : "pages/music-detail/music-detail",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "助眠音乐",
+                "enablePullDownRefresh": false,
+								"navigationStyle": "custom"
             }
             
         }

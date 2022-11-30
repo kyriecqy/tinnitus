@@ -14,13 +14,13 @@
 				<text>历史评估记录</text>
 			</view>
 			<scroll-view scroll-y="true" class="scroll-content">
-				<view v-for="(item, index) in 1" :key="index">
+				<view v-for="(item, index) in queHistory" :key="index">
 					<view class="scroll-item">
-						<text class="scroll-score color">18</text>
+						<text class="scroll-score color">{{ item.score }}</text>
 						<text class="color">分</text>
 						<view class="time">
 							<text>评估时间：</text>
-							<uni-dateformat date="2022/10/28" format="yyyy/MM/dd"></uni-dateformat>
+							<uni-dateformat :date="item.time" format="yyyy/MM/dd"></uni-dateformat>
 						</view>
 					</view>
 				</view>
@@ -35,15 +35,27 @@
 </template>
 
 <script>
+	import store from '../../store/index.js'
 	export default {
 		data() {
 			return {
-				score: 0
+				score: 0,
+				queHistory: []
 			}
 		},
 		onLoad(options) {
-			//console.log(options);
 			this.score = options.queResult
+			uniCloud.callFunction({
+				name: 'get_queHistory',
+				data: {
+					phone: store.state.userinfo.phone
+				}
+			}).then(res => {
+				console.log(res);
+				this.queHistory = res.result.data
+			}).catch(err => {
+				console.log(err);
+			})
 		},
 		computed: {
 			level: function() {

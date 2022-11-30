@@ -22,6 +22,8 @@
 </template>
 
 <script>
+	import store from '../../store/index.js';
+	const innerAudioContext = uni.createInnerAudioContext();
 	export default {
 		data() {
 			return {
@@ -43,11 +45,11 @@
 						selectIndex: ''
 					},
 					{
-						title: '耳鸣影响了您的工作/学习吗?',
+						title: '耳鸣影响了您的生活吗?',
 						selectIndex: ''
 					},
 					{
-						title: '耳鸣影响了您的心情吗?',
+						title: '耳鸣影响了您的情绪吗?',
 						selectIndex: ''
 					},
 					{
@@ -55,15 +57,27 @@
 						selectIndex: ''
 					}
 				],
-			  currentIndex: 0
+			  currentIndex: 0,
+				music_list: [
+					'https://vkceyugu.cdn.bspapp.com/VKCEYUGU-57427bc9-5796-4e91-8bbb-72a81e0943f3/e73685f3-868a-423a-a38c-ab30d119e793.mp3',
+					'https://vkceyugu.cdn.bspapp.com/VKCEYUGU-57427bc9-5796-4e91-8bbb-72a81e0943f3/9a5d579c-4834-4979-afca-a700489fc3c6.mp3',
+					'https://vkceyugu.cdn.bspapp.com/VKCEYUGU-57427bc9-5796-4e91-8bbb-72a81e0943f3/e2a3d3a5-0ec1-4279-8eb5-a0c965c85409.mp3',
+					'https://vkceyugu.cdn.bspapp.com/VKCEYUGU-57427bc9-5796-4e91-8bbb-72a81e0943f3/63e943a0-e31d-4364-8fca-7a1d809841e8.mp3',
+					'https://vkceyugu.cdn.bspapp.com/VKCEYUGU-57427bc9-5796-4e91-8bbb-72a81e0943f3/e770b3dd-307d-48e4-9143-1631e9bfb2ff.mp3',
+					'https://vkceyugu.cdn.bspapp.com/VKCEYUGU-57427bc9-5796-4e91-8bbb-72a81e0943f3/a807745d-a478-4d48-81e1-1496ce654164.mp3',
+					'https://vkceyugu.cdn.bspapp.com/VKCEYUGU-57427bc9-5796-4e91-8bbb-72a81e0943f3/2d2b0b6e-211e-4335-a3de-c310be49411c.mp3'
+				]
 			}
 		},
 		onLoad() {
-			
+			innerAudioContext.loop = true
+			innerAudioContext.src = this.music_list[this.currentIndex]
+			innerAudioContext.play()
 		},
 		computed: {
 			showQue: function() {
 				return this.queList.filter((value, index) => {
+					
 					return index === this.currentIndex
 				})
 			},
@@ -82,14 +96,19 @@
 			back() {
 				if(this.currentIndex > 0) {
 					this.currentIndex -= 1
+					innerAudioContext.src = this.music_list[this.currentIndex]
+					innerAudioContext.play()
 				}
 			},
 			next() {
 				if(this.currentIndex < this.queList.length-1) {
 					if(this.queList[this.currentIndex].selectIndex != '') {
 						this.currentIndex += 1
+						innerAudioContext.src = this.music_list[this.currentIndex]
+						innerAudioContext.play()
 						return;
 					}else {
+						
 						uni.showToast({
 							position: 'center',
 							title: '请选择其中一项'
@@ -98,6 +117,19 @@
 					}
 				}
 				//console.log(this.queResult);
+				innerAudioContext.stop()
+				innerAudioContext.destroy()
+				let obj = {
+					score: this.queResult,
+					phone: store.state.userinfo.phone,
+					time: Date.now()
+				}
+				uniCloud.callFunction({
+					name: 'add_queHistory',
+					data: obj
+				}).catch(err => {
+					console.log(err);
+				})
 				uni.navigateTo({
 					url: '/pages/que-result/que-result?queResult=' + JSON.stringify(this.queResult)
 				})
